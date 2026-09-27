@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Privacy-first browser-based audio compressor powered by FFmpeg.wasm.">
+<title>Voice Compressor</title>
+<style>
+:root{
+  --bg:#09111f;--panel:#131e32;--panel2:#0d1728;--text:#f3f7ff;
+  --muted:#aab8d2;--line:#2b3b5d;--blue:#78adff;--green:#88efc1;--red:#ff8e8e;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;min-height:100vh;padding:26px 15px;font-family:Tahoma,Arial,sans-serif;color:var(--text);
+  background:
+    radial-gradient(circle at 88% 10%,rgba(120,173,255,.15),transparent 28rem),
+    radial-gradient(circle at 10% 88%,rgba(136,239,193,.08),transparent 26rem),
+    var(--bg)
+}
+.wrap{max-width:900px;margin:auto}
+.hero{text-align:center;margin:14px 0 26px}
+h1{margin:0 0 9px;font-size:clamp(28px,5vw,44px)}
+.sub{margin:0;color:var(--muted);line-height:1.9}
+.card{
+  background:linear-gradient(180deg,#17243d,#111a2d);
+  border:1px solid var(--line);border-radius:22px;padding:22px;margin-bottom:18px;
+  box-shadow:0 22px 65px rgba(0,0,0,.26)
+}
+.drop{
+  border:2px dashed #48628d;border-radius:18px;padding:36px 18px;text-align:center;
+  background:rgba(255,255,255,.015);transition:.2s
+}
+.drop.drag{border-color:var(--green);background:rgba(136,239,193,.06)}
+input[type=file]{display:none}
+.btn{
+  border:0;border-radius:13px;padding:12px 17px;font:700 15px Tahoma,Arial,sans-serif;
+  cursor:pointer;background:var(--blue);color:#07111e
+}
+.btn.secondary{background:#2a3b5e;color:var(--text)}
+.btn.success{background:var(--green)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.filename{margin-top:14px;color:var(--muted);word-break:break-word}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+@media(max-width:670px){.grid{grid-template-columns:1fr}}
+label.title{display:block;font-weight:700;margin:0 0 8px}
+select,.box{
+  width:100%;min-height:48px;border-radius:12px;border:1px solid var(--line);
+  background:var(--panel2);color:var(--text);padding:11px;font-size:15px
+}
+.box{display:flex;align-items:center;gap:10px}
+.box input{width:18px;height:18px}
+.preset{margin-top:14px;color:var(--muted);font-size:14px;line-height:1.85}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:18px}
+@media(max-width:560px){.stats{grid-template-columns:1fr}}
+.stat{background:var(--panel2);border:1px solid var(--line);border-radius:13px;padding:13px}
+.stat small{display:block;color:var(--muted);margin-bottom:6px}
+.stat strong{font-size:19px}
+.progress{height:12px;background:#091321;border:1px solid var(--line);border-radius:99px;overflow:hidden;margin-top:18px}
+.bar{height:100%;width:0;background:linear-gradient(90deg,var(--blue),var(--green));transition:width .15s}
+.status{margin-top:10px;min-height:24px;color:var(--muted);font-size:14px;line-height:1.8}
+.ok{color:var(--green)} .err{color:var(--red)}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:16px}
+audio{width:100%;margin-top:15px}
+.note{
+  margin-top:18px;padding-top:15px;border-top:1px solid var(--line);
+  color:var(--muted);font-size:13px;line-height:1.9
+}
+.badge{
+  display:inline-block;margin-top:9px;border:1px solid rgba(136,239,193,.28);
+  background:rgba(136,239,193,.08);color:var(--green);padding:5px 9px;border-radius:99px;font-size:12px
+}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <section class="hero">
+    <h1>فشرده‌ساز فایل صوتی</h1>
+    <p class="sub">
+      اجرای مستقیم در مرورگر — بدون آپلود فایل صوتی<br>
+      <span class="badge">M4A → MP3 با FFmpeg داخل مرورگر</span>
+    </p>
+  </section>
+
+  <section class="card">
+    <div id="drop" class="drop">
+      <label class="btn" for="audioFile">انتخاب فایل صوتی</label>
+      <input id="audioFile" type="file"
+             accept="audio/*,.m4a,.mp3,.wav,.aac,.ogg,.opus,.flac,.webm,.3gp,.amr">
+      <div id="fileName" class="filename">هنوز فایلی انتخاب نشده است.</div>
+      <div style="margin-top:8px;font-size:12px;color:#8fa0c1">یا فایل را بکش و اینجا رها کن</div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="grid">
+      <div>
+        <label class="title" for="bitrate">کیفیت خروجی MP3</label>
+        <select id="bitrate">
+          <option value="24">24 kbps — بسیار کم‌حجم</option>
+          <option value="32">32 kbps — مناسب گفتار</option>
+          <option value="48" selected>48 kbps — پیشنهادی برای ویس</option>
+          <option value="64">64 kbps — کیفیت خوب</option>
+          <option value="96">96 kbps — کیفیت بالاتر</option>
+          <option value="128">128 kbps — کیفیت زیاد</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="title">کانال صوتی</label>
+        <div class="box">
+          <input id="mono" type="checkbox" checked>
+          <span>Mono — کاهش حجم بیشتر برای گفتار</span>
+        </div>
+      </div>
+
+      <div>
+        <label class="title">تنظیم سریع</label>
+        <button id="preset" class="btn secondary" style="width:100%">Speech Optimized</button>
+      </div>
+
+      <div>
+        <label class="title">فرمت خروجی</label>
+        <div class="box">MP3</div>
+      </div>
+    </div>
+
+    <div class="preset">
+      برای فایل‌های گفتاری، <b>48 kbps + Mono</b> معمولاً تعادل خوبی بین وضوح و حجم ایجاد می‌کند.
+    </div>
+
+    <div class="stats">
+      <div class="stat"><small>حجم اصلی</small><strong id="before">—</strong></div>
+      <div class="stat"><small>حجم خروجی</small><strong id="after">—</strong></div>
+      <div class="stat"><small>کاهش حجم</small><strong id="saved">—</strong></div>
+    </div>
+
+    <div class="progress"><div id="bar" class="bar"></div></div>
+    <div id="status" class="status">یک فایل صوتی انتخاب کن.</div>
+
+    <div class="actions">
+      <button id="compress" class="btn" disabled>فشرده‌سازی</button>
+      <button id="download" class="btn success" disabled>دانلود MP3</button>
+      <button id="reset" class="btn secondary">پاک کردن</button>
+    </div>
+
+    <audio id="preview" controls hidden></audio>
+
+    <div class="note">
+      بار اول هسته FFmpeg از اینترنت دریافت می‌شود. خود فایل صوتی شما آپلود نمی‌شود.
+      این نسخه از هسته Single‑Thread استفاده می‌کند تا اجرای مستقیم فایل HTML نیز امکان‌پذیر باشد.
+    </div>
+  </section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js"></script>
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  const el = {
+    file:$("audioFile"), fileName:$("fileName"), bitrate:$("bitrate"), mono:$("mono"),
+    preset:$("preset"), before:$("before"), after:$("after"), saved:$("saved"),
+    bar:$("bar"), status:$("status"), compress:$("compress"), download:$("download"),
+    reset:$("reset"), preview:$("preview"), drop:$("drop")
+  };
+
+  let selected = null;
+  let resultBlob = null;
+  let resultName = "";
+  let resultURL = null;
+  let ffmpeg = null;
+  let loading = false;
+
+  function setStatus(text,type){
+    el.status.className = "status " + (type || "");
+    el.status.textContent = text;
+  }
+
+  function fmt(bytes){
+    if(!Number.isFinite(bytes)) return "—";
+    const u=["B","KB","MB","GB"];
+    let n=bytes,i=0;
+    while(n>=1024 && i<u.length-1){n/=1024;i++;}
+    return n.toFixed(i?2:0)+" "+u[i];
+  }
+
+  function cleanPreview(){
+    if(resultURL) URL.revokeObjectURL(resultURL);
+    resultURL=null;
+    el.preview.hidden=true;
+    el.preview.removeAttribute("src");
+  }
+
+  function setFile(file){
+    if(!file) return;
+    selected=file;
+    resultBlob=null;
+    resultName="";
+    cleanPreview();
+    el.fileName.textContent=file.name;
+    el.before.textContent=fmt(file.size);
+    el.after.textContent="—";
+    el.saved.textContent="—";
+    el.bar.style.width="0%";
+    el.compress.disabled=false;
+    el.download.disabled=true;
+    setStatus("فایل آماده است. روی «فشرده‌سازی» بزن.");
+  }
+
+  el.file.addEventListener("change",e=>setFile(e.target.files && e.target.files[0]));
+
+  ["dragenter","dragover"].forEach(t=>{
+    el.drop.addEventListener(t,e=>{
+      e.preventDefault();
+      el.drop.classList.add("drag");
+    });
+  });
+
+  ["dragleave","drop"].forEach(t=>{
+    el.drop.addEventListener(t,e=>{
+      e.preventDefault();
+      el.drop.classList.remove("drag");
+    });
+  });
+
+  el.drop.addEventListener("drop",e=>{
+    if(e.dataTransfer.files && e.dataTransfer.files[0]) setFile(e.dataTransfer.files[0]);
+  });
+
+  el.preset.addEventListener("click",()=>{
+    el.bitrate.value="48";
+    el.mono.checked=true;
+    setStatus("حالت پیشنهادی فعال شد: 48 kbps + Mono.");
+  });
+
+  function safeBase(name){
+    return (name || "voice")
+      .replace(/\.[^/.]+$/,"")
+      .replace(/[^\p{L}\p{N}_\-]+/gu,"_")
+      .slice(0,90) || "voice";
+  }
+
+  function ext(name){
+    const p=(name||"").split(".");
+    if(p.length<2) return "bin";
+    return p.pop().toLowerCase().replace(/[^a-z0-9]/g,"") || "bin";
+  }
+
+  async function ensureFFmpeg(){
+    if(ffmpeg && ffmpeg.isLoaded()) return;
+    if(loading) throw new Error("FFmpeg هنوز در حال بارگذاری است.");
+    loading=true;
+
+    try{
+      if(!window.FFmpeg){
+        throw new Error("کتابخانه FFmpeg بارگذاری نشد. اینترنت یا دسترسی به CDN را بررسی کن.");
+      }
+
+      setStatus("در حال بارگذاری هسته FFmpeg…");
+      el.bar.style.width="3%";
+
+      const createFFmpeg = window.FFmpeg.createFFmpeg;
+
+      ffmpeg = createFFmpeg({
+        log:false,
+        mainName:"main",
+        corePath:"https://unpkg.com/@ffmpeg/core-st@0.11.1/dist/ffmpeg-core.js",
+        progress:function(p){
+          if(p && Number.isFinite(p.ratio)){
+            const v=Math.max(8,Math.min(95,Math.round(p.ratio*100)));
+            el.bar.style.width=v+"%";
+          }
+        },
+        logger:function(obj){
+          if(obj && obj.message && /time=/.test(obj.message)){
+            setStatus("در حال تبدیل و فشرده‌سازی…");
+          }
+        }
+      });
+
+      await ffmpeg.load();
+      el.bar.style.width="7%";
+      setStatus("هسته FFmpeg آماده شد. در حال خواندن فایل…");
+    } finally {
+      loading=false;
+    }
+  }
+
+  el.compress.addEventListener("click",async()=>{
+    if(!selected) return;
+
+    el.compress.disabled=true;
+    el.download.disabled=true;
+    resultBlob=null;
+    cleanPreview();
+    el.after.textContent="—";
+    el.saved.textContent="—";
+    el.bar.style.width="1%";
+
+    const inputName="input."+ext(selected.name);
+    const outputName="output.mp3";
+
+    try{
+      await ensureFFmpeg();
+
+      setStatus("در حال وارد کردن فایل به FFmpeg…");
+      const data = await window.FFmpeg.fetchFile(selected);
+
+      try{ ffmpeg.FS("unlink",inputName); }catch(_){}
+      try{ ffmpeg.FS("unlink",outputName); }catch(_){}
+
+      ffmpeg.FS("writeFile",inputName,data);
+
+      const bitrate=Number(el.bitrate.value);
+      const args=["-hide_banner","-i",inputName,"-vn"];
+
+      if(el.mono.checked) args.push("-ac","1");
+      if(bitrate<=32) args.push("-ar","22050");
+      else if(bitrate<=48) args.push("-ar","24000");
+      else if(bitrate<=64) args.push("-ar","32000");
+
+      args.push("-c:a","libmp3lame","-b:a",bitrate+"k",outputName);
+
+      setStatus("در حال تبدیل و فشرده‌سازی…");
+      await ffmpeg.run.apply(ffmpeg,args);
+
+      const out=ffmpeg.FS("readFile",outputName);
+      resultBlob=new Blob([out.buffer],{type:"audio/mpeg"});
+      resultName=safeBase(selected.name)+"-compressed-"+bitrate+"kbps.mp3";
+
+      el.after.textContent=fmt(resultBlob.size);
+      const pct=selected.size>0 ? (1-resultBlob.size/selected.size)*100 : 0;
+      el.saved.textContent=pct.toFixed(1)+"%";
+
+      resultURL=URL.createObjectURL(resultBlob);
+      el.preview.src=resultURL;
+      el.preview.hidden=false;
+      el.download.disabled=false;
+      el.bar.style.width="100%";
+
+      if(pct>=0){
+        setStatus("انجام شد. فایل MP3 آماده دانلود است.","ok");
+      }else{
+        setStatus("فایل ساخته شد، ولی از فایل اصلی بزرگ‌تر است؛ bitrate پایین‌تری انتخاب کن.","err");
+      }
+
+      try{ ffmpeg.FS("unlink",inputName); }catch(_){}
+      try{ ffmpeg.FS("unlink",outputName); }catch(_){}
+
+    }catch(err){
+      console.error(err);
+      el.bar.style.width="0%";
+      let msg=(err && err.message) ? err.message : String(err);
+
+      if(/SharedArrayBuffer|cross-origin|Worker|origin|null/i.test(msg)){
+        msg="مرورگر اجرای محلی هسته را مسدود کرده است. فایل را با Chrome یا Edge باز کن.";
+      }else if(/fetch|network|load/i.test(msg)){
+        msg="هسته FFmpeg از اینترنت بارگذاری نشد. اتصال اینترنت یا دسترسی به CDN را بررسی کن.";
+      }
+
+      setStatus("خطا: "+msg,"err");
+    }finally{
+      el.compress.disabled=!selected;
+    }
+  });
+
+  el.download.addEventListener("click",()=>{
+    if(!resultBlob) return;
+    const url=URL.createObjectURL(resultBlob);
+    const a=document.createElement("a");
+    a.href=url;
+    a.download=resultName || "compressed-voice.mp3";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),3000);
+  });
+
+  el.reset.addEventListener("click",()=>{
+    selected=null;
+    resultBlob=null;
+    resultName="";
+    el.file.value="";
+    el.fileName.textContent="هنوز فایلی انتخاب نشده است.";
+    el.before.textContent="—";
+    el.after.textContent="—";
+    el.saved.textContent="—";
+    el.bar.style.width="0%";
+    el.compress.disabled=true;
+    el.download.disabled=true;
+    cleanPreview();
+    setStatus("یک فایل صوتی انتخاب کن.");
+  });
+})();
+</script>
+</body>
+</html>
