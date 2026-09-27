@@ -1,0 +1,57 @@
+name: Publish Voice Compressor v1.0.0
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "index.html"
+      - ".github/workflows/release.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Prepare standalone release file
+        run: cp index.html voice-compressor.html
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          if gh release view v1.0.0 >/dev/null 2>&1; then
+            echo "Release v1.0.0 already exists; uploading/refreshing asset."
+            gh release upload v1.0.0 voice-compressor.html --clobber
+          else
+            gh release create v1.0.0 voice-compressor.html \
+              --target "${{ github.sha }}" \
+              --title "Voice Compressor v1.0.0" \
+              --notes-file - <<'EOF'
+          ## Voice Compressor v1.0.0
+
+          First stable release of the privacy-first browser audio compressor.
+
+          ### Highlights
+          - Compress and convert M4A, MP3, WAV and other common audio formats
+          - MP3 output with selectable bitrate from 24 to 128 kbps
+          - Speech-optimized **48 kbps + Mono** preset
+          - Before/after file-size comparison and compression percentage
+          - Built-in output preview
+          - Drag-and-drop file selection
+          - Selected audio is processed locally in the browser
+          - Standalone HTML download
+
+          ### Download & run
+          Download **voice-compressor.html**, open it in Chrome or Edge, and select your audio file.
+
+          > The first run requires internet access to load FFmpeg.wasm from the CDN.
+          EOF
+          fi
