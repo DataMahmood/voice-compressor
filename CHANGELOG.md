@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented here.
 
+## [1.2.0] - 2026-10-04
+
+### Added
+- Final approved Persian Turquoise image background.
+- Final approved Lapis & Gold image background.
+- Final replacement Isfahan Tile background image.
+- Final Persian Carpet background image.
+- Theme artwork stored under `assets/themes/` in the repository.
+
+### Changed
+- Theme backgrounds now use real image artwork instead of color-only backgrounds.
+- Isfahan Tile uses full `cover` sizing, matching the approved replacement treatment.
+- Persian Carpet keeps the full carpet image visible with fitted background sizing.
+- Persian Turquoise uses dark, translucent readable surfaces over the image background.
+- Carpet panels use a calmer neutral treatment to reduce red dominance while retaining the artwork.
+
 ## [1.1.0] - 2026-10-04
 
 ### Added
