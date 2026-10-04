@@ -27,6 +27,13 @@ Voice Compressor v1.1.0 includes the four themes from the latest approved PDF To
 - **Isfahan Tile**
 - **Persian Carpet**
 
+Each theme now uses its final approved image artwork as the actual page background:
+
+- Persian Turquoise — polished turquoise stones
+- Lapis & Gold — deep blue lapis pattern with gold veins
+- Isfahan Tile — final replacement Isfahan muqarnas/tile image
+- Persian Carpet — full fitted Tehran carpet image
+
 Theme preference is saved locally in the browser.
 
 ### Languages
@@ -71,7 +78,7 @@ Chrome and Edge are recommended, particularly for larger recordings.
 
 ## Release
 
-Current stable release: **v1.1.0**
+Current stable release: **v1.2.0**
 
 ## License
 
