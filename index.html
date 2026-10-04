@@ -71,28 +71,104 @@ audio{width:100%;margin-top:15px}
   background:rgba(136,239,193,.08);color:var(--green);padding:5px 9px;border-radius:99px;font-size:12px
 }
 
-/* v1.1 — themes ported from the latest approved PDF Tolkit design */
-body[data-theme='turquoise']{--bg:#E9F7F5;--panel:#FFFFFF;--panel2:#E5F3F1;--text:#173B3B;--muted:#557A77;--line:#B8D9D4;--blue:#159A9C;--green:#398A6B;--red:#B95458;--glow1:rgba(21,154,156,.15);--glow2:rgba(214,168,75,.11)}
-body[data-theme='lapis']{--bg:#091B36;--panel:#142B4C;--panel2:#19365C;--text:#F7F0DC;--muted:#BAC6D5;--line:#31557E;--blue:#2B6CB0;--green:#63B38A;--red:#E06D72;--glow1:rgba(43,108,176,.19);--glow2:rgba(224,182,80,.13)}
-body[data-theme='isfahan']{--bg:#F8F5EC;--panel:#FFFFFF;--panel2:#F1F3EF;--text:#203748;--muted:#657983;--line:#D1D6CA;--blue:#276C9D;--green:#438B68;--red:#BE5961;--glow1:rgba(39,108,157,.12);--glow2:rgba(34,166,161,.10)}
-body[data-theme='carpet']{--bg:#F6EFE9;--panel:#FFFFFF;--panel2:#F6E9E4;--text:#3F2427;--muted:#7D5A59;--line:#DCC2B7;--blue:#A8323E;--green:#4E876D;--red:#B6323E;--glow1:rgba(168,50,62,.12);--glow2:rgba(31,75,109,.09)}
-body{background:radial-gradient(circle at 88% 10%,var(--glow1),transparent 28rem),radial-gradient(circle at 10% 88%,var(--glow2),transparent 26rem),var(--bg);transition:background .2s ease,color .2s ease}
-.card{background:var(--panel)}
+/* v1.2 — final approved image-backed themes from PDF Tolkit */
+body[data-theme='turquoise']{
+  --bg:#07191B;--panel:rgba(7,38,40,.88);--panel2:rgba(11,55,57,.80);
+  --text:#F3FFFD;--muted:#C5E4E0;--line:rgba(88,199,188,.72);
+  --blue:#38C7BD;--green:#67C89C;--red:#FF8C91;
+  --theme-image:url("https://raw.githubusercontent.com/DataMahmood/voice-compressor/main/assets/themes/persian-turquoise.jpg");
+  --overlay1:rgba(1,16,18,.10);--overlay2:rgba(1,16,18,.20);
+  --shadow:0 18px 52px rgba(0,0,0,.28);--hero-shadow:0 2px 16px rgba(0,0,0,.75)
+}
+body[data-theme='lapis']{
+  --bg:#091B36;--panel:rgba(13,34,65,.88);--panel2:rgba(20,48,86,.82);
+  --text:#FFF7E2;--muted:#D2D9E6;--line:rgba(223,181,79,.55);
+  --blue:#D9AE48;--green:#76C49A;--red:#F07D82;
+  --theme-image:url("https://raw.githubusercontent.com/DataMahmood/voice-compressor/main/assets/themes/lapis-gold.png");
+  --overlay1:rgba(2,10,29,.18);--overlay2:rgba(2,10,29,.30);
+  --shadow:0 18px 54px rgba(0,0,0,.34);--hero-shadow:0 2px 18px rgba(0,0,0,.85)
+}
+body[data-theme='isfahan']{
+  --bg:#0A2440;--panel:rgba(9,35,61,.87);--panel2:rgba(18,52,80,.80);
+  --text:#F5FBFF;--muted:#CADBE8;--line:rgba(87,194,205,.65);
+  --blue:#45C7D0;--green:#71C19D;--red:#F38B90;
+  --theme-image:url("https://raw.githubusercontent.com/DataMahmood/voice-compressor/main/assets/themes/isfahan-tile.jpg");
+  --overlay1:rgba(1,16,32,.10);--overlay2:rgba(1,16,32,.25);
+  --shadow:0 18px 54px rgba(0,0,0,.34);--hero-shadow:0 2px 18px rgba(0,0,0,.88)
+}
+body[data-theme='carpet']{
+  --bg:#E9E0D5;--panel:rgba(255,249,240,.92);--panel2:rgba(244,233,220,.90);
+  --text:#38282A;--muted:#765E5A;--line:rgba(91,66,64,.30);
+  --blue:#8C3B45;--green:#4E8069;--red:#B33946;
+  --theme-image:url("https://raw.githubusercontent.com/DataMahmood/voice-compressor/main/assets/themes/persian-carpet.jpg");
+  --overlay1:rgba(248,241,231,.13);--overlay2:rgba(248,241,231,.24);
+  --shadow:0 18px 48px rgba(58,37,35,.22);--hero-shadow:0 1px 10px rgba(255,255,255,.92)
+}
+
+body{
+  background-color:var(--bg);
+  background-image:
+    linear-gradient(180deg,var(--overlay1),var(--overlay2)),
+    var(--theme-image);
+  background-position:center top;
+  background-size:cover;
+  background-repeat:no-repeat;
+  background-attachment:fixed;
+  transition:background-color .22s ease,color .22s ease
+}
+/* Final PDF version used cover for the replacement Isfahan artwork. */
+body[data-theme='isfahan']{
+  background-position:center top;
+  background-size:cover
+}
+/* Final PDF version kept the whole carpet visible rather than cropping it. */
+body[data-theme='carpet']{
+  background-position:center top;
+  background-size:contain;
+  background-repeat:no-repeat;
+  background-color:var(--bg)
+}
+
+.card{
+  background:var(--panel);
+  border-color:var(--line);
+  box-shadow:var(--shadow);
+  backdrop-filter:blur(9px) saturate(1.08);
+  -webkit-backdrop-filter:blur(9px) saturate(1.08)
+}
 .drop{border-color:var(--line);background:var(--panel2)}
-.drop.drag{border-color:var(--green);background:color-mix(in srgb,var(--green) 10%,var(--panel2))}
+.drop.drag{border-color:var(--green);background:color-mix(in srgb,var(--green) 12%,var(--panel2))}
 .btn.secondary{background:var(--panel2);color:var(--text);border:1px solid var(--line)}
-select,.box,.stat{background:var(--panel2)}
+select,.box,.stat{background:var(--panel2);border-color:var(--line)}
 .progress{background:var(--panel2);direction:ltr}
 .badge{background:var(--panel2);color:var(--blue);border-color:var(--line)}
+.hero h1{color:var(--text);text-shadow:var(--hero-shadow)}
+.hero .sub{color:var(--muted);text-shadow:var(--hero-shadow)}
+.filename,.preset,.note,.status{color:var(--muted)}
 .topbar{display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;margin:0 0 18px}
-.theme-switcher,.language-switcher{display:flex;align-items:center;gap:4px;border:1px solid var(--line);background:var(--panel);border-radius:13px;padding:5px;box-shadow:var(--shadow)}
+.theme-switcher,.language-switcher{
+  display:flex;align-items:center;gap:4px;border:1px solid var(--line);
+  background:var(--panel);border-radius:13px;padding:5px;box-shadow:var(--shadow);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)
+}
 .theme-switcher label{font-size:12px;font-weight:700;color:var(--muted);padding-inline:5px}
 .theme-switcher select{min-width:170px;border:0;background:var(--panel2);color:var(--text);border-radius:9px;padding:9px 10px;font-size:12px}
 .lang-btn{border:0;background:transparent;color:var(--muted);padding:9px 10px;border-radius:8px;cursor:pointer;font-size:11px;font-weight:700;white-space:nowrap}
 .lang-btn:hover{background:var(--panel2);color:var(--text)}
 .lang-btn.active{background:var(--blue);color:#fff}
-body[lang='en']{text-align:left}body[lang='fa'],body[lang='ar']{text-align:right}
-@media(max-width:720px){.topbar{display:grid;grid-template-columns:1fr}.theme-switcher,.language-switcher{width:100%;justify-content:stretch}.theme-switcher select{flex:1;min-width:0}.lang-btn{flex:1}}
+body[data-theme='lapis'] .lang-btn.active{color:#17110A}
+body[data-theme='carpet'] .btn{color:#fff}
+body[data-theme='carpet'] .btn.secondary{color:var(--text)}
+body[data-theme='carpet'] .btn.success{color:#07110D}
+body[lang='en']{text-align:left}
+body[lang='fa'],body[lang='ar']{text-align:right}
+@media(max-width:720px){
+  .topbar{display:grid;grid-template-columns:1fr}
+  .theme-switcher,.language-switcher{width:100%;justify-content:stretch}
+  .theme-switcher select{flex:1;min-width:0}
+  .lang-btn{flex:1}
+  body[data-theme='carpet']{background-size:auto 100%;background-position:center top}
+}
 
 </style>
 </head>
