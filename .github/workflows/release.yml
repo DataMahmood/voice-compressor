@@ -1,4 +1,4 @@
-name: Publish Voice Compressor v1.1.0
+name: Publish Voice Compressor v1.2.0
 
 on:
   push:
@@ -27,36 +27,34 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
-          if gh release view v1.1.0 >/dev/null 2>&1; then
-            echo "Release v1.1.0 already exists; refreshing asset."
-            gh release upload v1.1.0 voice-compressor.html --clobber
+          if gh release view v1.2.0 >/dev/null 2>&1; then
+            echo "Release v1.2.0 already exists; refreshing asset."
+            gh release upload v1.2.0 voice-compressor.html --clobber
           else
-            gh release create v1.1.0 voice-compressor.html \
+            gh release create v1.2.0 voice-compressor.html \
               --target "${{ github.sha }}" \
-              --title "Voice Compressor v1.1.0" \
+              --title "Voice Compressor v1.2.0" \
               --notes-file - <<'EOF'
-          ## Voice Compressor v1.1.0
+          ## Voice Compressor v1.2.0
 
-          Multilingual and multi-theme update.
+          Theme artwork update using the final approved image backgrounds from the PDF Tolkit design work.
 
           ### New
-          - Four Iranian-inspired themes from the latest approved PDF Tolkit design:
-            - Persian Turquoise
-            - Lapis & Gold
-            - Isfahan Tile
-            - Persian Carpet
-          - English, Persian and Arabic interface
-          - Automatic RTL layout for Persian and Arabic
-          - LTR layout for English
-          - Theme and language preferences are saved locally
-          - All dynamic compression messages are localized
+          - Real image background for **Persian Turquoise**
+          - Real image background for **Lapis & Gold**
+          - Final replacement **Isfahan Tile** image, displayed with cover sizing
+          - Full-page fitted **Persian Carpet** background
+          - Theme-aware translucent panels for readability
+          - Dark readable Turquoise surfaces, matching the final approved theme direction
+          - Carpet treatment keeps the full rug visible while reducing visual red dominance
 
-          ### Existing features
-          - M4A, MP3, WAV and other common audio formats
-          - MP3 output from 24 to 128 kbps
+          ### Still included
+          - English / Persian / Arabic interface
+          - Automatic LTR / RTL
+          - Saved theme and language preferences
+          - M4A and common audio inputs → MP3
           - Speech-optimized 48 kbps + Mono preset
-          - Local browser processing
-          - Standalone HTML download
+          - Local browser audio processing
 
           Download **voice-compressor.html** and open it in Chrome or Edge.
           EOF
