@@ -16,8 +16,26 @@ Compress and convert common audio formats such as **M4A, MP3, WAV, AAC, OGG, OPU
 - Compression percentage
 - Built-in output preview
 - Drag-and-drop file selection
-- Responsive Persian UI
 - Single-file HTML app
+
+### Themes
+
+Voice Compressor v1.1.0 includes the four themes from the latest approved PDF Tolkit design:
+
+- **Persian Turquoise** — default
+- **Lapis & Gold**
+- **Isfahan Tile**
+- **Persian Carpet**
+
+Theme preference is saved locally in the browser.
+
+### Languages
+
+- **English** — LTR
+- **فارسی** — RTL
+- **العربية** — RTL
+
+The interface, controls and compression status messages are localized. Language preference is also saved locally.
 
 ## Recommended setting for speech
 
@@ -45,6 +63,7 @@ This is usually a good balance between intelligibility and file size.
 - Vanilla JavaScript
 - FFmpeg.wasm
 - FFmpeg single-thread core
+- Browser localStorage for UI preferences
 
 ## Browser support
 
@@ -52,7 +71,7 @@ Chrome and Edge are recommended, particularly for larger recordings.
 
 ## Release
 
-Current stable release: **v1.0.0**
+Current stable release: **v1.1.0**
 
 ## License
 
