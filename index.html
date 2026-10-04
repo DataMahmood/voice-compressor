@@ -70,25 +70,65 @@ audio{width:100%;margin-top:15px}
   display:inline-block;margin-top:9px;border:1px solid rgba(136,239,193,.28);
   background:rgba(136,239,193,.08);color:var(--green);padding:5px 9px;border-radius:99px;font-size:12px
 }
+
+/* v1.1 — themes ported from the latest approved PDF Tolkit design */
+body[data-theme='turquoise']{--bg:#E9F7F5;--panel:#FFFFFF;--panel2:#E5F3F1;--text:#173B3B;--muted:#557A77;--line:#B8D9D4;--blue:#159A9C;--green:#398A6B;--red:#B95458;--glow1:rgba(21,154,156,.15);--glow2:rgba(214,168,75,.11)}
+body[data-theme='lapis']{--bg:#091B36;--panel:#142B4C;--panel2:#19365C;--text:#F7F0DC;--muted:#BAC6D5;--line:#31557E;--blue:#2B6CB0;--green:#63B38A;--red:#E06D72;--glow1:rgba(43,108,176,.19);--glow2:rgba(224,182,80,.13)}
+body[data-theme='isfahan']{--bg:#F8F5EC;--panel:#FFFFFF;--panel2:#F1F3EF;--text:#203748;--muted:#657983;--line:#D1D6CA;--blue:#276C9D;--green:#438B68;--red:#BE5961;--glow1:rgba(39,108,157,.12);--glow2:rgba(34,166,161,.10)}
+body[data-theme='carpet']{--bg:#F6EFE9;--panel:#FFFFFF;--panel2:#F6E9E4;--text:#3F2427;--muted:#7D5A59;--line:#DCC2B7;--blue:#A8323E;--green:#4E876D;--red:#B6323E;--glow1:rgba(168,50,62,.12);--glow2:rgba(31,75,109,.09)}
+body{background:radial-gradient(circle at 88% 10%,var(--glow1),transparent 28rem),radial-gradient(circle at 10% 88%,var(--glow2),transparent 26rem),var(--bg);transition:background .2s ease,color .2s ease}
+.card{background:var(--panel)}
+.drop{border-color:var(--line);background:var(--panel2)}
+.drop.drag{border-color:var(--green);background:color-mix(in srgb,var(--green) 10%,var(--panel2))}
+.btn.secondary{background:var(--panel2);color:var(--text);border:1px solid var(--line)}
+select,.box,.stat{background:var(--panel2)}
+.progress{background:var(--panel2);direction:ltr}
+.badge{background:var(--panel2);color:var(--blue);border-color:var(--line)}
+.topbar{display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;margin:0 0 18px}
+.theme-switcher,.language-switcher{display:flex;align-items:center;gap:4px;border:1px solid var(--line);background:var(--panel);border-radius:13px;padding:5px;box-shadow:var(--shadow)}
+.theme-switcher label{font-size:12px;font-weight:700;color:var(--muted);padding-inline:5px}
+.theme-switcher select{min-width:170px;border:0;background:var(--panel2);color:var(--text);border-radius:9px;padding:9px 10px;font-size:12px}
+.lang-btn{border:0;background:transparent;color:var(--muted);padding:9px 10px;border-radius:8px;cursor:pointer;font-size:11px;font-weight:700;white-space:nowrap}
+.lang-btn:hover{background:var(--panel2);color:var(--text)}
+.lang-btn.active{background:var(--blue);color:#fff}
+body[lang='en']{text-align:left}body[lang='fa'],body[lang='ar']{text-align:right}
+@media(max-width:720px){.topbar{display:grid;grid-template-columns:1fr}.theme-switcher,.language-switcher{width:100%;justify-content:stretch}.theme-switcher select{flex:1;min-width:0}.lang-btn{flex:1}}
+
 </style>
 </head>
-<body>
+<body data-theme="turquoise">
 <main class="wrap">
+  <div class="topbar">
+    <div class="theme-switcher">
+      <label id="themeLabel" for="themeSelect">🎨 پوسته</label>
+      <select id="themeSelect">
+        <option value="turquoise">فیروزه ایرانی</option>
+        <option value="lapis">لاجورد و طلا</option>
+        <option value="isfahan">کاشی اصفهان</option>
+        <option value="carpet">فرش ایرانی</option>
+      </select>
+    </div>
+    <div class="language-switcher" aria-label="Language">
+      <button class="lang-btn" data-lang="en">English</button>
+      <button class="lang-btn active" data-lang="fa">فارسی</button>
+      <button class="lang-btn" data-lang="ar">العربية</button>
+    </div>
+  </div>
   <section class="hero">
-    <h1>فشرده‌ساز فایل صوتی</h1>
+    <h1 id="appTitle">فشرده‌ساز فایل صوتی</h1>
     <p class="sub">
-      اجرای مستقیم در مرورگر — بدون آپلود فایل صوتی<br>
-      <span class="badge">M4A → MP3 با FFmpeg داخل مرورگر</span>
+      <span id="subtitle">فشرده‌سازی و تبدیل فایل صوتی — مستقیم در مرورگر شما.</span><br>
+      <span class="badge" id="localBadge">● پردازش محلی</span>
     </p>
   </section>
 
   <section class="card">
     <div id="drop" class="drop">
-      <label class="btn" for="audioFile">انتخاب فایل صوتی</label>
+      <label class="btn" id="selectFileLabel" for="audioFile">انتخاب فایل صوتی</label>
       <input id="audioFile" type="file"
              accept="audio/*,.m4a,.mp3,.wav,.aac,.ogg,.opus,.flac,.webm,.3gp,.amr">
       <div id="fileName" class="filename">هنوز فایلی انتخاب نشده است.</div>
-      <div style="margin-top:8px;font-size:12px;color:#8fa0c1">یا فایل را بکش و اینجا رها کن</div>
+      <div id="dropHint" style="margin-top:8px;font-size:12px;color:var(--muted)">یا فایل را بکش و اینجا رها کن</div>
     </div>
   </section>
 
@@ -125,7 +165,7 @@ audio{width:100%;margin-top:15px}
       </div>
     </div>
 
-    <div class="preset">
+    <div class="preset" id="recommendation">
       برای فایل‌های گفتاری، <b>48 kbps + Mono</b> معمولاً تعادل خوبی بین وضوح و حجم ایجاد می‌کند.
     </div>
 
@@ -146,9 +186,8 @@ audio{width:100%;margin-top:15px}
 
     <audio id="preview" controls hidden></audio>
 
-    <div class="note">
-      بار اول هسته FFmpeg از اینترنت دریافت می‌شود. خود فایل صوتی شما آپلود نمی‌شود.
-      این نسخه از هسته Single‑Thread استفاده می‌کند تا اجرای مستقیم فایل HTML نیز امکان‌پذیر باشد.
+    <div class="note" id="privacyNote">
+      بار اول هسته FFmpeg از اینترنت دریافت می‌شود. خود فایل صوتی شما آپلود نمی‌شود و پردازش داخل مرورگر انجام می‌شود.
     </div>
   </section>
 </main>
@@ -156,12 +195,22 @@ audio{width:100%;margin-top:15px}
 <script src="https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js"></script>
 <script>
 (function(){
+  const I18N={
+en:{title:'Voice Compressor',subtitle:'Compress and convert audio — directly in your browser.',themeLabel:'🎨 Theme',local:'● LOCAL PROCESSING',select:'Select audio file',noFile:'No file selected yet.',drop:'or drag and drop an audio file here',quality:'MP3 output quality',channel:'Audio channel',mono:'Mono — smaller files for speech',quick:'Quick setting',speech:'Speech Optimized',format:'Output format',recommend:'For spoken audio, <b>48 kbps + Mono</b> usually provides a good balance between clarity and file size.',before:'Original size',after:'Output size',saved:'Size reduction',compress:'Compress',download:'Download MP3',reset:'Reset',privacy:'On the first run, the FFmpeg core is downloaded from the internet. Your audio file is not uploaded; processing happens in your browser.',ready:'Select an audio file to begin.',fileReady:'File is ready. Click “Compress”.',preset:'Speech preset enabled: 48 kbps + Mono.',loading:'Loading FFmpeg core…',core:'FFmpeg is ready. Reading file…',importing:'Importing audio into FFmpeg…',processing:'Converting and compressing…',done:'Done. Your MP3 is ready to download.',larger:'The output is larger than the original. Try a lower bitrate.',worker:'The browser blocked local execution. Try Chrome or Edge.',network:'FFmpeg could not be loaded. Check your internet connection or CDN access.',error:'Error: ',themes:{turquoise:'Persian Turquoise',lapis:'Lapis & Gold',isfahan:'Isfahan Tile',carpet:'Persian Carpet'},q:{24:'24 kbps — smallest size',32:'32 kbps — speech',48:'48 kbps — recommended for voice',64:'64 kbps — good quality',96:'96 kbps — higher quality',128:'128 kbps — high quality'}},
+fa:{title:'فشرده‌ساز فایل صوتی',subtitle:'فشرده‌سازی و تبدیل فایل صوتی — مستقیم در مرورگر شما.',themeLabel:'🎨 پوسته',local:'● پردازش محلی',select:'انتخاب فایل صوتی',noFile:'هنوز فایلی انتخاب نشده است.',drop:'یا فایل را بکش و اینجا رها کن',quality:'کیفیت خروجی MP3',channel:'کانال صوتی',mono:'Mono — کاهش حجم بیشتر برای گفتار',quick:'تنظیم سریع',speech:'بهینه برای گفتار',format:'فرمت خروجی',recommend:'برای فایل‌های گفتاری، <b>48 kbps + Mono</b> معمولاً تعادل خوبی بین وضوح و حجم ایجاد می‌کند.',before:'حجم اصلی',after:'حجم خروجی',saved:'کاهش حجم',compress:'فشرده‌سازی',download:'دانلود MP3',reset:'پاک کردن',privacy:'بار اول هسته FFmpeg از اینترنت دریافت می‌شود. خود فایل صوتی شما آپلود نمی‌شود و پردازش داخل مرورگر انجام می‌شود.',ready:'یک فایل صوتی انتخاب کن.',fileReady:'فایل آماده است. روی «فشرده‌سازی» بزن.',preset:'حالت پیشنهادی فعال شد: 48 kbps + Mono.',loading:'در حال بارگذاری هسته FFmpeg…',core:'هسته FFmpeg آماده شد. در حال خواندن فایل…',importing:'در حال وارد کردن فایل به FFmpeg…',processing:'در حال تبدیل و فشرده‌سازی…',done:'انجام شد. فایل MP3 آماده دانلود است.',larger:'فایل خروجی از فایل اصلی بزرگ‌تر است؛ bitrate پایین‌تری انتخاب کن.',worker:'مرورگر اجرای محلی هسته را مسدود کرده است. فایل را با Chrome یا Edge باز کن.',network:'هسته FFmpeg بارگذاری نشد. اتصال اینترنت یا دسترسی به CDN را بررسی کن.',error:'خطا: ',themes:{turquoise:'فیروزه ایرانی',lapis:'لاجورد و طلا',isfahan:'کاشی اصفهان',carpet:'فرش ایرانی'},q:{24:'24 kbps — بسیار کم‌حجم',32:'32 kbps — مناسب گفتار',48:'48 kbps — پیشنهادی برای ویس',64:'64 kbps — کیفیت خوب',96:'96 kbps — کیفیت بالاتر',128:'128 kbps — کیفیت زیاد'}},
+ar:{title:'ضاغط الملفات الصوتية',subtitle:'اضغط وحوّل الملفات الصوتية — مباشرة في متصفحك.',themeLabel:'🎨 السمة',local:'● معالجة محلية',select:'اختيار ملف صوتي',noFile:'لم يتم اختيار ملف بعد.',drop:'أو اسحب الملف الصوتي وأفلته هنا',quality:'جودة MP3 الناتج',channel:'قناة الصوت',mono:'Mono — حجم أصغر للكلام',quick:'إعداد سريع',speech:'محسّن للكلام',format:'صيغة الإخراج',recommend:'للتسجيلات الصوتية، يوفر <b>48 kbps + Mono</b> عادةً توازناً جيداً بين الوضوح والحجم.',before:'الحجم الأصلي',after:'حجم الإخراج',saved:'تقليل الحجم',compress:'ضغط',download:'تنزيل MP3',reset:'مسح',privacy:'في التشغيل الأول يتم تنزيل نواة FFmpeg من الإنترنت. لا يتم رفع ملفك الصوتي؛ تتم المعالجة داخل المتصفح.',ready:'اختر ملفاً صوتياً للبدء.',fileReady:'الملف جاهز. اضغط «ضغط».',preset:'تم تفعيل إعداد الكلام: 48 kbps + Mono.',loading:'جارٍ تحميل نواة FFmpeg…',core:'FFmpeg جاهز. جارٍ قراءة الملف…',importing:'جارٍ إدخال الملف إلى FFmpeg…',processing:'جارٍ التحويل والضغط…',done:'تم. ملف MP3 جاهز للتنزيل.',larger:'ملف الإخراج أكبر من الأصل؛ اختر معدل بت أقل.',worker:'منع المتصفح التشغيل المحلي. جرّب Chrome أو Edge.',network:'تعذر تحميل FFmpeg. تحقق من الإنترنت أو الوصول إلى CDN.',error:'خطأ: ',themes:{turquoise:'الفيروز الفارسي',lapis:'اللازورد والذهب',isfahan:'بلاط أصفهان',carpet:'السجاد الفارسي'},q:{24:'24 kbps — أصغر حجم',32:'32 kbps — للكلام',48:'48 kbps — موصى به للصوت',64:'64 kbps — جودة جيدة',96:'96 kbps — جودة أعلى',128:'128 kbps — جودة عالية'}}
+};
+let currentLang=localStorage.getItem('vcLang')||'fa';
+let currentTheme=localStorage.getItem('vcTheme')||'turquoise';
+const rtlLangs=new Set(['fa','ar']);
+const t=k=>I18N[currentLang][k]??I18N.en[k]??k;
+
   const $ = id => document.getElementById(id);
   const el = {
     file:$("audioFile"), fileName:$("fileName"), bitrate:$("bitrate"), mono:$("mono"),
     preset:$("preset"), before:$("before"), after:$("after"), saved:$("saved"),
     bar:$("bar"), status:$("status"), compress:$("compress"), download:$("download"),
-    reset:$("reset"), preview:$("preview"), drop:$("drop")
+    reset:$("reset"), preview:$("preview"), drop:$("drop"), theme:$("themeSelect")
   };
 
   let selected = null;
@@ -170,6 +219,51 @@ audio{width:100%;margin-top:15px}
   let resultURL = null;
   let ffmpeg = null;
   let loading = false;
+
+
+  function applyTheme(){
+    document.body.dataset.theme=currentTheme;
+    el.theme.value=currentTheme;
+    localStorage.setItem('vcTheme',currentTheme);
+  }
+
+  function applyLanguage(){
+    document.documentElement.lang=currentLang;
+    document.documentElement.dir=rtlLangs.has(currentLang)?'rtl':'ltr';
+    document.body.lang=currentLang;
+    document.body.dir=document.documentElement.dir;
+    document.getElementById('appTitle').textContent=t('title');
+    document.getElementById('subtitle').textContent=t('subtitle');
+    document.getElementById('themeLabel').textContent=t('themeLabel');
+    document.getElementById('localBadge').textContent=t('local');
+    document.getElementById('selectFileLabel').textContent=t('select');
+    document.getElementById('dropHint').textContent=t('drop');
+    document.getElementById('recommendation').innerHTML=t('recommend');
+    document.getElementById('privacyNote').textContent=t('privacy');
+    const titles=document.querySelectorAll('.grid .title');
+    if(titles[0])titles[0].textContent=t('quality');
+    if(titles[1])titles[1].textContent=t('channel');
+    if(titles[2])titles[2].textContent=t('quick');
+    if(titles[3])titles[3].textContent=t('format');
+    const monoText=document.querySelector('.grid .box span');
+    if(monoText)monoText.textContent=t('mono');
+    el.preset.textContent=t('speech');
+    const smalls=document.querySelectorAll('.stat small');
+    if(smalls[0])smalls[0].textContent=t('before');
+    if(smalls[1])smalls[1].textContent=t('after');
+    if(smalls[2])smalls[2].textContent=t('saved');
+    el.compress.textContent=t('compress');
+    el.download.textContent=t('download');
+    el.reset.textContent=t('reset');
+    [...el.theme.options].forEach(o=>o.textContent=t('themes')[o.value]);
+    [...el.bitrate.options].forEach(o=>o.textContent=t('q')[o.value]);
+    document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.dataset.lang===currentLang));
+    if(!selected){el.fileName.textContent=t('noFile');setStatus(t('ready'))}
+    else if(resultBlob)setStatus(t('done'),'ok');
+    else setStatus(t('fileReady'));
+    document.title=currentLang==='fa'?'Voice Compressor — فشرده‌ساز صوت':currentLang==='ar'?'Voice Compressor — ضاغط الصوت':'Voice Compressor';
+    localStorage.setItem('vcLang',currentLang);
+  }
 
   function setStatus(text,type){
     el.status.className = "status " + (type || "");
@@ -204,7 +298,7 @@ audio{width:100%;margin-top:15px}
     el.bar.style.width="0%";
     el.compress.disabled=false;
     el.download.disabled=true;
-    setStatus("فایل آماده است. روی «فشرده‌سازی» بزن.");
+    setStatus(t('fileReady'));
   }
 
   el.file.addEventListener("change",e=>setFile(e.target.files && e.target.files[0]));
@@ -230,7 +324,16 @@ audio{width:100%;margin-top:15px}
   el.preset.addEventListener("click",()=>{
     el.bitrate.value="48";
     el.mono.checked=true;
-    setStatus("حالت پیشنهادی فعال شد: 48 kbps + Mono.");
+    setStatus(t('preset'));
+  });
+
+  document.querySelectorAll('.lang-btn').forEach(btn=>btn.addEventListener('click',()=>{
+    currentLang=btn.dataset.lang;
+    applyLanguage();
+  }));
+  el.theme.addEventListener('change',()=>{
+    currentTheme=el.theme.value;
+    applyTheme();
   });
 
   function safeBase(name){
@@ -253,10 +356,10 @@ audio{width:100%;margin-top:15px}
 
     try{
       if(!window.FFmpeg){
-        throw new Error("کتابخانه FFmpeg بارگذاری نشد. اینترنت یا دسترسی به CDN را بررسی کن.");
+        throw new Error(t('network'));
       }
 
-      setStatus("در حال بارگذاری هسته FFmpeg…");
+      setStatus(t('loading'));
       el.bar.style.width="3%";
 
       const createFFmpeg = window.FFmpeg.createFFmpeg;
@@ -273,14 +376,14 @@ audio{width:100%;margin-top:15px}
         },
         logger:function(obj){
           if(obj && obj.message && /time=/.test(obj.message)){
-            setStatus("در حال تبدیل و فشرده‌سازی…");
+            setStatus(t('processing'));
           }
         }
       });
 
       await ffmpeg.load();
       el.bar.style.width="7%";
-      setStatus("هسته FFmpeg آماده شد. در حال خواندن فایل…");
+      setStatus(t('core'));
     } finally {
       loading=false;
     }
@@ -303,7 +406,7 @@ audio{width:100%;margin-top:15px}
     try{
       await ensureFFmpeg();
 
-      setStatus("در حال وارد کردن فایل به FFmpeg…");
+      setStatus(t('importing'));
       const data = await window.FFmpeg.fetchFile(selected);
 
       try{ ffmpeg.FS("unlink",inputName); }catch(_){}
@@ -321,7 +424,7 @@ audio{width:100%;margin-top:15px}
 
       args.push("-c:a","libmp3lame","-b:a",bitrate+"k",outputName);
 
-      setStatus("در حال تبدیل و فشرده‌سازی…");
+      setStatus(t('processing'));
       await ffmpeg.run.apply(ffmpeg,args);
 
       const out=ffmpeg.FS("readFile",outputName);
@@ -339,9 +442,9 @@ audio{width:100%;margin-top:15px}
       el.bar.style.width="100%";
 
       if(pct>=0){
-        setStatus("انجام شد. فایل MP3 آماده دانلود است.","ok");
+        setStatus(t('done'),"ok");
       }else{
-        setStatus("فایل ساخته شد، ولی از فایل اصلی بزرگ‌تر است؛ bitrate پایین‌تری انتخاب کن.","err");
+        setStatus(t('larger'),"err");
       }
 
       try{ ffmpeg.FS("unlink",inputName); }catch(_){}
@@ -353,12 +456,12 @@ audio{width:100%;margin-top:15px}
       let msg=(err && err.message) ? err.message : String(err);
 
       if(/SharedArrayBuffer|cross-origin|Worker|origin|null/i.test(msg)){
-        msg="مرورگر اجرای محلی هسته را مسدود کرده است. فایل را با Chrome یا Edge باز کن.";
+        msg=t('worker');
       }else if(/fetch|network|load/i.test(msg)){
-        msg="هسته FFmpeg از اینترنت بارگذاری نشد. اتصال اینترنت یا دسترسی به CDN را بررسی کن.";
+        msg=t('network');
       }
 
-      setStatus("خطا: "+msg,"err");
+      setStatus(t('error')+msg,"err");
     }finally{
       el.compress.disabled=!selected;
     }
@@ -381,7 +484,7 @@ audio{width:100%;margin-top:15px}
     resultBlob=null;
     resultName="";
     el.file.value="";
-    el.fileName.textContent="هنوز فایلی انتخاب نشده است.";
+    el.fileName.textContent=t('noFile');
     el.before.textContent="—";
     el.after.textContent="—";
     el.saved.textContent="—";
@@ -389,8 +492,10 @@ audio{width:100%;margin-top:15px}
     el.compress.disabled=true;
     el.download.disabled=true;
     cleanPreview();
-    setStatus("یک فایل صوتی انتخاب کن.");
+    setStatus(t('ready'));
   });
+  applyTheme();
+  applyLanguage();
 })();
 </script>
 </body>
